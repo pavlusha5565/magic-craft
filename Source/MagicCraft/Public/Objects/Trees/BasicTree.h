@@ -11,7 +11,7 @@
 
 #include "Interfaces/InteractableInterface.h"
 
-#include "InteractableTree.generated.h"
+#include "BasicTree.generated.h"
 
 UCLASS()
 class MAGICCRAFT_API AInteractableTree : public AActor

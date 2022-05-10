@@ -8,7 +8,7 @@
 
 #include "Interfaces/InteractableInterface.h"
 
-#include "Objects/Trees/InteractableTree.h"
+#include "Objects/Trees/BasicTree.h"
 
 #include "Camera/CameraComponent.h"
 

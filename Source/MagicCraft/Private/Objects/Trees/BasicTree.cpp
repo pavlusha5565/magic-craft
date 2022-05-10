@@ -1,6 +1,6 @@
 // Pavlusha5565 copyright.
 
-#include "Objects/Trees/InteractableTree.h"
+#include "Objects/Trees/BasicTree.h"
 
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
