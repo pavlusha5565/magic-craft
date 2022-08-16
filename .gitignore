@@ -6,6 +6,9 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+#Material large size files. Disk storage backup.
+Content/
+
 # Compiled Object files
 *.slo
 *.lo

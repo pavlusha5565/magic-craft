@@ -23,9 +23,9 @@ class MAGICCRAFT_API IInteractableInterface
 public:
 	IInteractableInterface();
 
-	FName Name;
+	FString Name;
 
-	FName ActionName;
+	FString Action;
 
 	// Action to interact
 	UFUNCTION(BlueprintNativeEvent)
@@ -37,6 +37,11 @@ public:
 	void InteractRealesed();
 	virtual void InteractRealesed_Implementation();
 
+	// Action release button interact
+	UFUNCTION(BlueprintNativeEvent)
+	void Use();
+	virtual void Use_Implementation();
+
 	// Action watch at item
 	UFUNCTION(BlueprintNativeEvent)
 	void FocusItem();
@@ -46,4 +51,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void UnfocusItem();
 	virtual void UnfocusItem_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnComponentBeginOverlap();
+	virtual void OnComponentBeginOverlap_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnComponentEndOverlap();
+	virtual void OnComponentEndOverlap_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Info")
+	FString GetActionText();
+	virtual FString GetActionText_Implementation();
 };

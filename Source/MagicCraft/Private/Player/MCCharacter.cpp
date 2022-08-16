@@ -5,12 +5,12 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
+#include "Camera/CameraComponent.h"
 
 #include "Interfaces/InteractableInterface.h"
 
-#include "Objects/Trees/BasicTree.h"
-
-#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -26,6 +26,12 @@ AMCCharacter::AMCCharacter()
 	CameraComponent->SetRelativeLocation(FVector(-39.56f, 1.75f, 64.f)); // Position the camera
 	CameraComponent->bUsePawnControlRotation = true;
 
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
+	CollisionSphere->SetupAttachment(RootComponent);
+	CollisionSphere->InitSphereRadius(250.f);
+	CollisionSphere->SetGenerateOverlapEvents(true);
+	CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
 	ArmLength = 2000.f;
 }
 
@@ -34,6 +40,8 @@ void AMCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AMCCharacter::OnOverlapBegin);
+
 }
 
 // Called to bind functionality to input
@@ -47,6 +55,11 @@ void AMCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	// Bind jump events
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+
+	// Bind jump events
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMCCharacter::Sprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMCCharacter::StopSprinting);
 
 	PlayerInputComponent->BindAction("LeftMouseButton", IE_Pressed, this, &AMCCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AMCCharacter::BeginInterract);
@@ -107,13 +120,6 @@ void AMCCharacter::PrimaryAttack()
 	/****************************/
 
 	FHitResult Hit = TraceLine(1500.f);
-
-	AInteractableTree* Tree = Cast<AInteractableTree>(Hit.GetActor());
-	UE_LOG(LogTemp, Warning, TEXT("Cast"));
-	if (Tree) {
-		UE_LOG(LogTemp, Warning, TEXT("Cast Success"));
-		Tree->Chop(30);
-	}
 }
 
 FHitResult AMCCharacter::TraceLine(float Distance)
@@ -128,6 +134,16 @@ FHitResult AMCCharacter::TraceLine(float Distance)
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_Visibility, QueryParams);
 
 	return HitResult;
+}
+
+void AMCCharacter::Sprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 1500.f;
+}
+
+void AMCCharacter::StopSprinting()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 }
 
 void AMCCharacter::BeginInterract()
@@ -151,6 +167,7 @@ void AMCCharacter::BeginInterract()
 
 	IInteractableInterface* IActor = Cast<IInteractableInterface>(HitResult.GetActor());
 
+	// Если есть актор, которые может взаимодействовать, инитим взаимодействие
 	if (IActor) {
 		IInteractableInterface::Execute_Interact(HitResult.GetActor());
 	}
@@ -160,6 +177,7 @@ void AMCCharacter::EndInterract()
 {
 	IInteractableInterface* IActorFocused = Cast<IInteractableInterface>(FocusedItem);
 
+	// Актор может работать по долгому взаимодействию, тогда при любой потери фокуса, вызываем функции остановки
 	if (IActorFocused) {
 		IInteractableInterface::Execute_InteractRealesed(FocusedItem);
 	}
@@ -174,20 +192,40 @@ void AMCCharacter::ChechInteractable(float Distance)
 	IInteractableInterface* IActorFocused = Cast<IInteractableInterface>(FocusedItem);
 
 	if (IActor != nullptr) {
-		if (IActorFocused != IActor && Actor != nullptr) {
+		// Если сменился фокус
+		if (IActorFocused != IActor) {
+			// Снимаем фокус с старого обьекта
 			if (IActorFocused) {
 				IInteractableInterface::Execute_UnfocusItem(FocusedItem);
 				IInteractableInterface::Execute_InteractRealesed(FocusedItem);
 				FocusedItem = nullptr;
 			}
+			// Инитим фокус на новый обьект
 			FocusedItem = Actor;
 			IInteractableInterface::Execute_FocusItem(Actor);
 		}
 		return;
 	}
+	// если в фокусе нету ничего, то снимает фокус и взаимодействие
 	if (IActorFocused) {
 		IInteractableInterface::Execute_UnfocusItem(FocusedItem);
 		IInteractableInterface::Execute_InteractRealesed(FocusedItem);
 	}
+	// обнуляем переменные
 	FocusedItem = nullptr;
+}
+
+void AMCCharacter::OnOverlapBegin(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComponent, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep,
+	const FHitResult& Hit
+)
+{
+	IInteractableInterface* IActor = Cast<IInteractableInterface>(OtherActor);
+	if (IActor) {
+		IInteractableInterface::Execute_OnComponentBeginOverlap(OtherActor);
+	}
 }

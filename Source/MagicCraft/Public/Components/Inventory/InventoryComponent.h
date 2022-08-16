@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "Components/ActorComponent.h"
-#include "Components/Inventory/ItemTypes.h"
+#include "Components/Inventory/Item.h"
 
 #include "InventoryComponent.generated.h"
 
@@ -27,21 +27,21 @@ protected:
 	int32 InventorySlotLimit;
 
 public:	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	TArray<FItem> GetInventory();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool Add(FItem Item);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	int32 GetFreeSpace(int32 MaxStack, FName ID);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	int32 GetFreeSlots();
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	bool Remove(FName ID, int32 Count);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	int32 CountOfItem(FName ID);
 };

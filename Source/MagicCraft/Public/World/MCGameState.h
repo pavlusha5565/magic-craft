@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
+
+#include "Components/Inventory/ItemsDataAsset.h"
+
 #include "MCGameState.generated.h"
 
 /**
@@ -15,5 +18,8 @@ class MAGICCRAFT_API AMCGameState : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
+	AMCGameState();
 
+	UPROPERTY(EditAnywhere)
+	UItemsDataAsset* ItemsDataAsset;
 };

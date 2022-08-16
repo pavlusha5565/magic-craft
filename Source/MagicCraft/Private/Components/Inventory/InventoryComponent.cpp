@@ -1,6 +1,3 @@
-// Pavlusha5565 copyright.
-
-
 #include "Components/Inventory/InventoryComponent.h"
 
 FName NULL_NAME = FName(TEXT("Null"));
@@ -43,6 +40,7 @@ bool UInventoryComponent::Add(FItem Item)
 		if (Inventory.Num() < InventorySlotLimit)
 		{
 			Inventory.Add(Item);
+			UE_LOG(LogTemp, Warning, TEXT("Added"));
 			return true;
 		}
 		return false;
@@ -78,6 +76,7 @@ bool UInventoryComponent::Add(FItem Item)
 			Add(AddItem);
 			return true;
 		}
+	    return true;
 	}
 	return false;
 }

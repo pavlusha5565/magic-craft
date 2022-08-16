@@ -18,5 +18,11 @@ class MAGICCRAFT_API AMCPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	AMCPlayerController();
+
+	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* Inventory;
+
+	UFUNCTION(BlueprintCallable)
+	UInventoryComponent* GetInventoryComponent();
 };
