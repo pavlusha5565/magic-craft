@@ -7,7 +7,11 @@
 .vs/
 
 #Material large size files. Disk storage backup.
-Content/
+Content/Materials
+Content/Blender
+Content/Base
+Content/Packages
+Content/Maps
 
 # Compiled Object files
 *.slo
